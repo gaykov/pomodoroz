@@ -47,7 +47,7 @@ class Timer extends React.Component {
     }
 
     componentWillUnmount() {
-        if (Plaform.OS === 'ios') {
+        if (Platform.OS === 'ios') {
             AppStateIOS.removeEventListener('change', this._handleIosAppStateChange.bind(this));
         }
     }
