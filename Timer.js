@@ -7,7 +7,9 @@ const {
     StyleSheet,
     Text,
     View,
-    TouchableOpacity
+    TouchableOpacity,
+    Platform,
+    AppStateIOS
 } = React;
 
 class Timer extends React.Component {
@@ -17,7 +19,36 @@ class Timer extends React.Component {
         this.state = {
             timeRemaining: 0,
             currentProfile: 0,
-            timer: null
+            timer: null,
+            timeOnBackground: 0
+        }
+    }
+
+    _handleIosAppStateChange(newState) {
+        if (newState === 'background') {
+            if (this.state.timeRemaining) {
+                this.state.timeOnBackground = Math.ceil((new Date().getTime() / 1000));
+            }
+        } else {
+            if (this.state.timeOnBackground) {
+                const timeRemaining = Math.ceil(this.state.timeRemaining - ((new Date().getTime() / 1000) - this.state.timeOnBackground));
+                this.setState({
+                    timeRemaining,
+                    timeOnBackground: 0
+                });
+            }
+        }
+    }
+
+    componentDidMount() {
+        if (Platform.OS === 'ios') {
+            AppStateIOS.addEventListener('change', this._handleIosAppStateChange.bind(this));
+        }
+    }
+
+    componentWillUnmount() {
+        if (Plaform.OS === 'ios') {
+            AppStateIOS.removeEventListener('change', this._handleIosAppStateChange.bind(this));
         }
     }
 
